@@ -39,6 +39,16 @@ export const productsAPI = {
   getBrands: () => api.get('/products/brands'),
   getReviews: (id) => api.get(`/products/${id}/reviews`),
   addReview: (id, data) => api.post(`/products/${id}/reviews`, data),
+  create: (data) => api.post('/products', data),
+  uploadFile: (file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return api.post('/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    })
+  },
 }
 
 export const cartAPI = {

@@ -27,3 +27,6 @@ backend/*.sqlite3
 # OS
 Thumbs.db
 Desktop.ini
+
+# Uploads
+backend/uploads/

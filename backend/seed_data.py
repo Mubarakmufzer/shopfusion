@@ -8,6 +8,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from database import SessionLocal, engine, Base
 from models.product import Product
+from models.user import User
+from auth import hash_password
 import models  # registers all ORM models
 
 Base.metadata.create_all(bind=engine)
@@ -245,16 +247,34 @@ PRODUCTS = [
 def seed():
     db = SessionLocal()
     try:
-        existing = db.query(Product).count()
-        if existing > 0:
-            print(f"Database already has {existing} products. Skipping seed.")
-            return
+        product_count = db.query(Product).count()
+        if product_count == 0:
+            for p in PRODUCTS:
+                product = Product(**p)
+                db.add(product)
+            db.commit()
+            print(f"Success: Seeded {len(PRODUCTS)} products successfully!")
+        else:
+            print(f"Database already has {product_count} products. Skipping product seed.")
 
-        for p in PRODUCTS:
-            product = Product(**p)
-            db.add(product)
-        db.commit()
-        print(f"✅ Seeded {len(PRODUCTS)} products successfully!")
+        # Seed Admin User
+        admin_email = "muhammed@gmail.com"
+        admin_password = "password123"
+        existing_user = db.query(User).filter(User.email == admin_email).first()
+        if not existing_user:
+            print(f"Creating default admin: {admin_email}")
+            user = User(
+                email=admin_email,
+                full_name="Muhammed Mubarak",
+                hashed_password=hash_password(admin_password),
+                is_admin=True
+            )
+            db.add(user)
+            db.commit()
+            print("Success: Admin user created!")
+        else:
+            print(f"Admin user {admin_email} already exists.")
+
     except Exception as e:
         db.rollback()
         print(f"❌ Seed failed: {e}")

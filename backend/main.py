@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from database import engine, Base
 import models  # registers all models
 
-from routers import auth, products, cart, wishlist, orders, reviews
+from routers import auth, products, cart, wishlist, orders, reviews, uploads
 
 # Create all tables
 Base.metadata.create_all(bind=engine)
@@ -28,6 +29,10 @@ app.include_router(cart.router)
 app.include_router(wishlist.router)
 app.include_router(orders.router)
 app.include_router(reviews.router)
+app.include_router(uploads.router)
+
+# Mount uploads directory
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 
 @app.get("/")

@@ -2,8 +2,10 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import Optional, List
 from database import get_db
+from models.user import User
 from models.product import Product
-from schemas import ProductOut
+from schemas import ProductOut, ProductCreate
+from auth import get_current_admin
 
 router = APIRouter(prefix="/products", tags=["products"])
 
@@ -75,4 +77,17 @@ def get_product(product_id: int, db: Session = Depends(get_db)):
     product = db.query(Product).filter(Product.id == product_id).first()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
+    return product
+
+
+@router.post("", response_model=ProductOut)
+def create_product(
+    data: ProductCreate,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_current_admin)
+):
+    product = Product(**data.model_dump())
+    db.add(product)
+    db.commit()
+    db.refresh(product)
     return product

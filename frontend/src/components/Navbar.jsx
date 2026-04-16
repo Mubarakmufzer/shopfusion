@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { ShoppingCart, Heart, User, Search, Menu, X, LogOut } from 'lucide-react'
+import { ShoppingCart, Heart, User, Search, Menu, X, LogOut, ShieldCheck } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useCartStore } from '../store/cartStore'
 import { useWishlistStore } from '../store/wishlistStore'
@@ -114,6 +114,11 @@ export default function Navbar() {
                   <Link to="/orders" className="footer-link" style={{ padding: '12px 16px', display: 'block' }} onClick={() => setDropdownOpen(false)}>
                     My Orders
                   </Link>
+                  {user?.is_admin && (
+                    <Link to="/admin" className="footer-link" style={{ padding: '12px 16px', display: 'flex', alignItems: 'center', gap: 8, color: 'var(--primary-light)' }} onClick={() => setDropdownOpen(false)}>
+                      <ShieldCheck size={15} /> Admin Dashboard
+                    </Link>
+                  )}
                   <Link to="/wishlist" className="footer-link" style={{ padding: '12px 16px', display: 'block' }} onClick={() => setDropdownOpen(false)}>
                     Wishlist
                   </Link>

@@ -12,6 +12,7 @@ import Checkout from './pages/Checkout'
 import Orders from './pages/Orders'
 import Login from './pages/Login'
 import Register from './pages/Register'
+import AdminDashboard from './pages/AdminDashboard'
 import { useAuthStore } from './store/authStore'
 import { useCartStore } from './store/cartStore'
 import { useWishlistStore } from './store/wishlistStore'
@@ -20,6 +21,13 @@ import './index.css'
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuthStore()
   return isAuthenticated() ? children : <Navigate to="/login" replace />
+}
+
+function AdminRoute({ children }) {
+  const { isAuthenticated, user } = useAuthStore()
+  if (!isAuthenticated()) return <Navigate to="/login" replace />
+  if (!user?.is_admin) return <Navigate to="/" replace />
+  return children
 }
 
 export default function App() {
@@ -49,6 +57,7 @@ export default function App() {
         <Route path="/wishlist" element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
         <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
         <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
       </Routes>
       <Footer />
     </BrowserRouter>
